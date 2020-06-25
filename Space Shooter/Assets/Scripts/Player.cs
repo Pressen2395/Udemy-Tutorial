@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -9,11 +10,14 @@ public class Player : MonoBehaviour
     [SerializeField]
     private GameObject _laserPrefab;
     [SerializeField]
+    private GameObject _tripleShotPrefab;
+    [SerializeField]
     private float _fireRate = 0.5f;
     private float nextFire = 1f;
     [SerializeField]
     private int _lives = 3;
     private SpawnManager _spawnManager;
+    private bool _isTripleShotActive = false;
     void Start()
     {
 
@@ -45,7 +49,10 @@ public class Player : MonoBehaviour
     void PlayerAttack()
     {
         nextFire = Time.time + _fireRate;
-        Instantiate(_laserPrefab, transform.position + new Vector3(0, .735f, 0), Quaternion.identity);        
+        if(_isTripleShotActive == true)
+            Instantiate(_tripleShotPrefab, transform.position + new Vector3(-0.82f,0,0), Quaternion.identity);  
+        else
+            Instantiate(_laserPrefab, transform.position + new Vector3(0, .735f, 0), Quaternion.identity);
     }
     public void Damage()
 	{
@@ -58,5 +65,15 @@ public class Player : MonoBehaviour
             //let it know that player is dead
             Destroy(this.gameObject);
 		}
+	}
+    public void TripleShotActive()
+	{
+        _isTripleShotActive = true;
+		StartCoroutine(PowerDownRoutine());
+	}
+    IEnumerator PowerDownRoutine()
+	{
+        yield return new WaitForSeconds(5.0f);
+        _isTripleShotActive = false;
 	}
 }
